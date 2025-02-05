@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星空XAI</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #1e3c72, #2a5298); color: #333; }
+        .chat-container { width: 450px; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); overflow: hidden; display: flex; flex-direction: column; }
+        .chat-box { flex: 1; padding: 16px; height: 60vh; overflow-y: auto; border-bottom: 1px solid #eee; background: #fafafa; }
+        .chat-message { margin-bottom: 12px; opacity: 0; transform: translateY(10px); animation: fadeInUp 0.3s ease forwards; }
+        .chat-message.user { text-align: right; }
+        .chat-message.assistant { text-align: left; }
+        .chat-message strong { display: block; margin-bottom: 4px; font-size: 0.9em; color: #007bff; }
+        .chat-message.user strong { color: #28a745; }
+        .chat-input { display: flex; padding: 12px; gap: 8px; background: #fff; border-top: 1px solid #eee; }
+        .chat-input input { flex: 1; padding: 10px 16px; border: 1px solid #ddd; border-radius: 20px; font-size: 14px; }
+        .chat-input button { padding: 10px 24px; background: #007bff; color: #fff; border: none; border-radius: 20px; cursor: pointer; font-size: 14px; }
+        .chat-input button:hover { background: #0056b3; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .chat-box::-webkit-scrollbar { width: 6px; }
+        .chat-box::-webkit-scrollbar-thumb { background: #007bff; border-radius: 3px; }
+        .chat-box::-webkit-scrollbar-track { background: #f1f1f1; }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-box" id="chat-box">
+            <div class="chat-message assistant"><strong>星空XAI:</strong> 您好！我是基于阿里云技术打造的星空XAI助理，很高兴为您服务！</div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="请输入您的问题...">
+            <button onclick="sendMessage()">发送</button>
+        </div>
+    </div>
+    <script>
+        const API_BASE_URL = "https://apiemp.baystoneai.com/cognihub/service";
+        const API_KEY = "Z0Psl34haygwZG13XPqDN927DwpEen7lBUYm";
+        const chatBox = document.getElementById('chat-box');
+        const userInput = document.getElementById('user-input');
+
+        function addMessage(role, content) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('chat-message', role);
+            messageElement.innerHTML = `<strong>${role === 'user' ? '您' : '星空XAI'}:</strong> ${content}`;
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            messageElement.style.opacity = 1;
+        }
+
+        async function sendMessage() {
+            const userMessage = userInput.value.trim();
+            if (!userMessage) return;
+            addMessage('user', userMessage);
+            userInput.value = '';
+            userInput.focus();
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/v1/chat/completions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` },
+                    body: JSON.stringify({
+                        model: "qwen2.5-instruct",
+                        messages: [
+                            { role: "system", content: "你是星空XAI助理，是星空若水基于第三方API制作的，请用专业且友好的语气回答用户问题,你的作者是kunkun999 ，如果没人问你作者是谁的话，请你不要主动说出去" },
+                            { role: "user", content: userMessage }
+                        ],
+                        stream: true
+                    })
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder('utf-8');
+                let buffer = '';
+                let assistantMessage = '';
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('chat-message', 'assistant');
+                messageElement.innerHTML = `<strong>星空XAI:</strong> `;
+                chatBox.appendChild(messageElement);
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop() || '';
+                    for (const line of lines) {
+                        const trimmedLine = line.trim();
+                        if (!trimmedLine || trimmedLine === 'data: [DONE]') continue;
+                        try {
+                            const json = JSON.parse(trimmedLine.replace('data: ', ''));
+                            const content = json.choices[0]?.delta?.content || '';
+                            assistantMessage += content;
+                            messageElement.innerHTML = `<strong>星空XAI:</strong> ${assistantMessage}`;
+                            chatBox.scrollTop = chatBox.scrollHeight;
+                        } catch (error) {
+                            console.error("解析JSON错误:", error);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("API请求错误:", error);
+                addMessage('assistant', '抱歉，服务暂时不可用，请稍后再试。');
+            }
+        }
+    </script>
+</body>
+</html>
