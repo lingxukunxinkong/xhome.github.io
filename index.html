@@ -3,106 +3,430 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>星空XAI</title>
+    <title>kunkun999 | 个人主页</title>
+    <!-- 修复了 Font Awesome 的链接 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Microsoft YaHei', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #1e3c72, #2a5298); color: #333; }
-        .chat-container { width: 450px; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); overflow: hidden; display: flex; flex-direction: column; }
-        .chat-box { flex: 1; padding: 16px; height: 60vh; overflow-y: auto; border-bottom: 1px solid #eee; background: #fafafa; }
-        .chat-message { margin-bottom: 12px; opacity: 0; transform: translateY(10px); animation: fadeInUp 0.3s ease forwards; }
-        .chat-message.user { text-align: right; }
-        .chat-message.assistant { text-align: left; }
-        .chat-message strong { display: block; margin-bottom: 4px; font-size: 0.9em; color: #007bff; }
-        .chat-message.user strong { color: #28a745; }
-        .chat-input { display: flex; padding: 12px; gap: 8px; background: #fff; border-top: 1px solid #eee; }
-        .chat-input input { flex: 1; padding: 10px 16px; border: 1px solid #ddd; border-radius: 20px; font-size: 14px; }
-        .chat-input button { padding: 10px 24px; background: #007bff; color: #fff; border: none; border-radius: 20px; cursor: pointer; font-size: 14px; }
-        .chat-input button:hover { background: #0056b3; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .chat-box::-webkit-scrollbar { width: 6px; }
-        .chat-box::-webkit-scrollbar-thumb { background: #007bff; border-radius: 3px; }
-        .chat-box::-webkit-scrollbar-track { background: #f1f1f1; }
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a8a4e6;
+            --bg-color: #0f0c29;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(45deg, var(--bg-color), #2a0845);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 星空背景动画 */
+        .stars {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+        }
+
+        .stars::before,
+        .stars::after {
+            content: '';
+            position: absolute;
+            background: white;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        /* 流星动画 */
+        @keyframes meteor {
+            0% {
+                transform: translateX(0) translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(100vw) translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        /* 点击星光特效 */
+        .click-effect {
+            position: absolute;
+            width: 50px; /* 增大特效大小 */
+            height: 50px; /* 增大特效大小 */
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: clickAnimation 1s ease-out forwards;
+        }
+
+        @keyframes clickAnimation {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
+
+        /* 导航栏 */
+        nav {
+            padding: 1.5rem 5%;
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* 实时时间 */
+        .time {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        /* 主页内容 */
+        .container {
+            padding: 120px 5% 50px;
+        }
+
+        /* 个人介绍卡片 */
+        .profile-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            transform: translateY(0);
+            transition: 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .profile-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        /* 项目展示卡片 */
+        .project-card, .activity-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            transform: translateY(0);
+            transition: 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .project-card:hover, .activity-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        /* 按钮样式 */
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 24px;
+            background: linear-gradient(45deg, var(--primary-color), #8e7cf3);
+            border-radius: 30px;
+            color: white;
+            text-decoration: none;
+            margin: 10px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button i {
+            margin-right: 10px;
+            transition: 0.3s;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(108, 92, 231, 0.3);
+        }
+
+        .cta-button:hover i {
+            transform: translateX(5px);
+        }
+
+        /* 入场动画 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-box" id="chat-box">
-            <div class="chat-message assistant"><strong>星空XAI:</strong> 您好！我是基于阿里云技术打造的星空XAI助理，很高兴为您服务！</div>
-        </div>
-        <div class="chat-input">
-            <input type="text" id="user-input" placeholder="请输入您的问题...">
-            <button onclick="sendMessage()">发送</button>
-        </div>
-    </div>
-    <script>
-        const API_BASE_URL = "https://apiemp.baystoneai.com/cognihub/service";
-        const API_KEY = "Z0Psl34haygwZG13XPqDN927DwpEen7lBUYm";
-        const chatBox = document.getElementById('chat-box');
-        const userInput = document.getElementById('user-input');
+    <div class="stars"></div>
 
-        function addMessage(role, content) {
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('chat-message', role);
-            messageElement.innerHTML = `<strong>${role === 'user' ? '您' : '星空XAI'}:</strong> ${content}`;
-            chatBox.appendChild(messageElement);
-            chatBox.scrollTop = chatBox.scrollHeight;
-            messageElement.style.opacity = 1;
+    <nav>
+        <div class="nav-links">
+            <a href="#home">首页</a>
+            <a href="#projects">项目</a>
+            <a href="#activities">活动</a>
+            <a href="#contact">联系我们</a> <!-- 修复了错误的链接文本 -->
+        </div>
+        <div class="time" id="realtime-clock"></div>
+    </nav>
+
+    <div class="container">
+        <section id="home" class="animate">
+            <h1 style="font-size: 3.5rem; margin-bottom: 1rem;">欢迎来到kunkun999的宇宙空间站 🚀</h1>
+            <p style="font-size: 1.2rem; opacity: 0.9;">探索垃圾废物科技 | 创造赛博医学奇迹</p>
+        </section>
+
+        <section id="projects" class="animate" style="animation-delay: 0.2s;">
+            <div class="project-card">
+                <h2><i class="fas fa-star"></i> 星空论坛</h2>
+                <p style="margin: 1rem 0; line-height: 1.6;">
+                    星空论坛是一个集技术交流、创意分享和社区互动于一体的现代网络平台。<br>
+                    🔥 特点：<br>
+                    - 实时聊天系统<br>
+                    - 智能内容推荐<br>
+                    - 全响应式设计<br>
+                    - 安全权限管理系统
+                </p>
+                <!-- 修复了链接地址 -->
+                <a href="https://hinp.us.kg" target="_blank" class="cta-button">
+                    <i class="fas fa-rocket"></i>
+                    立即访问
+                </a>
+            </div>
+
+            <div class="project-card">
+                <h2><i class="fas fa-search"></i> 星空搜索引擎</h2>
+                <p style="margin: 1rem 0; line-height: 1.6;">
+                    星空搜索引擎是一个高效、智能的搜索工具，专为探索浩瀚数据宇宙而设计。<br>
+                    🔥 特点：<br>
+                    - 自然语言处理<br>
+                    - 实时搜索结果<br>
+                    - 个性化推荐<br>
+                    - 多语言支持
+                </p>
+                <!-- 修复了链接地址 -->
+                <a href="https://xdupc.lingxmj.top" target="_blank" class="cta-button">
+                    <i class="fas fa-search"></i>
+                    立即体验
+                </a>
+            </div>
+
+            <div class="project-card">
+                <h2><i class="fas fa-store"></i> 星空应用商店</h2>
+                <p style="margin: 1rem 0; line-height: 1.6;">
+                    星空应用商店是一个集成了海量优质应用的数字分发平台。<br>
+                    🔥 特点：<br>
+                    - 丰富的应用资源<br>
+                    - 安全的应用审核机制<br>
+                    - 用户评价系统<br>
+                    - 个性化推荐
+                </p>
+                <!-- 修复了链接地址 -->
+                <a href="https://xapp.lingxmj.top" target="_blank" class="cta-button">
+                    <i class="fas fa-store"></i>
+                    立即访问
+                </a>
+            </div>
+
+            <div class="project-card">
+                <h2><i class="fas fa-robot"></i> 星空XAI</h2>
+                <p style="margin: 1rem 0; line-height: 1.6;">
+                    星空XAI是一个先进的可解释人工智能平台，帮助用户理解和信任AI决策。<br>
+                    🔥 特点：<br>
+                    - 可视化AI决策过程<br>
+                    - 支持多种机器学习模型<br>
+                    - 实时解释功能<br>
+                    - 用户友好的界面
+                </p>
+                <!-- 修复了链接地址 -->
+                <a href="https://xai.lingxmj.top" target="_blank" class="cta-button">
+                    <i class="fas fa-robot"></i>
+                    立即体验
+                </a>
+            </div>
+        </section>
+
+        <section id="activities" class="animate" style="animation-delay: 0.4s;">
+            <h2>活动</h2>
+            <div class="activity-card">
+                <h3>拯救赛博文盲，创造美好网络世界</h3>
+                <p style="margin: 1rem 0; line-height: 1.6;">
+                    本活动旨在普及赛博文化知识，帮助更多人了解和参与赛博文化。通过线上讲座、互动问答等形式，提升大家的赛博素养，共同营造健康、积极的网络环境。
+                </p>
+                <!-- 修复了链接地址 -->
+                <a href="tencent://AddContact/?fromId=45&fromSubId=1&subcmd=all&uin=553658156" class="cta-button">
+                    <i class="fas fa-handshake"></i>
+                    加入活动
+                </a>
+            </div>
+            <div class="activity-card">
+                <h3>建造星空软件商店软件生态链</h3>
+                <p style="margin: 1rem 0; line-height: 1.6;">
+                    星空软件商店致力于打造一个开放、共享的软件生态系统。我们诚邀开发者和用户共同参与，通过贡献代码、反馈建议等方式，不断完善软件生态，为用户提供更好的体验。
+                </p>
+                <!-- 修复了链接地址 -->
+                <a href="tencent://AddContact/?fromId=45&fromSubId=1&subcmd=all&uin=553658156" class="cta-button">
+                    <i class="fas fa-code"></i>
+                    参与建设
+                </a>
+            </div>
+        </section>
+
+        <section class="animate" style="animation-delay: 0.6s;">
+            <h2>友情链接(可申请)</h2>
+            <div style="margin: 2rem 0; display: flex; flex-wrap: wrap;">
+                <!-- 修复了链接地址 -->
+                <a href="https://xapp.lingxmj.top" target="_blank" class="cta-button">
+                    <i class="fab fa-app-store"></i>
+                    星空应用商店
+                </a>
+                <a href="https://xdupc.lingxmj.top" target="_blank" class="cta-button">
+                    <i class="fas fa-search"></i>
+                    星空搜索引擎
+                </a>
+                <a href="https://xai.lingxmj.top" target="_blank" class="cta-button">
+                    <i class="fas fa-robot"></i>
+                    星空XAI
+                </a>
+            </div>
+        </section>
+
+        <section class="animate" style="animation-delay: 0.8s;">
+            <h2>个人介绍</h2>
+            <div class="profile-card">
+                <h3>我是kunkun999</h3>
+                <p style="margin: 1rem 0; line-height: 1.6;">
+                    我是一名热爱嘎腰子的开发者，专注于探索前沿技术，致力于创造没有意义的垃圾代码。我喜欢在星空论坛分享我的想法，也欢迎你跟我去缅甸旅行，一起制造垃圾代码。
+                </p>
+                <!-- 修复了链接地址 -->
+                <a href="https://xhome.lingxmj.top" target="_blank" class="cta-button">
+                    <i class="fas fa-user"></i>
+                    了解更多
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // 生成随机星星
+        function createStars() {
+            const stars = document.querySelector('.stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.style.position = 'absolute';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
+                star.style.background = 'white';
+                star.style.borderRadius = '50%';
+                star.style.animation = `twinkle ${2 + Math.random() * 3}s infinite`;
+                stars.appendChild(star);
+            }
+
+            // 生成流星
+            for (let i = 0; i < 20; i++) {
+                const meteor = document.createElement('div');
+                meteor.style.position = 'absolute';
+                meteor.style.left = Math.random() * 100 + '%';
+                meteor.style.top = Math.random() * 100 + '%';
+                meteor.style.width = Math.random() * 10 + 'px';
+                meteor.style.height = meteor.style.width;
+                meteor.style.background = 'white';
+                meteor.style.borderRadius = '50%';
+                meteor.style.opacity = Math.random();
+                meteor.style.animation = `meteor ${5 + Math.random() * 10}s linear infinite`;
+                stars.appendChild(meteor);
+            }
         }
 
-        async function sendMessage() {
-            const userMessage = userInput.value.trim();
-            if (!userMessage) return;
-            addMessage('user', userMessage);
-            userInput.value = '';
-            userInput.focus();
+        // 点击星光特效
+        document.addEventListener('click', (e) => {
+            const clickEffect = document.createElement('div');
+            clickEffect.classList.add('click-effect');
+            clickEffect.style.left = `${e.clientX - 25}px`; // 调整位置居中
+            clickEffect.style.top = `${e.clientY - 25}px`;
+            document.body.appendChild(clickEffect);
 
-            try {
-                const response = await fetch(`${API_BASE_URL}/v1/chat/completions`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` },
-                    body: JSON.stringify({
-                        model: "qwen2.5-instruct",
-                        messages: [
-                            { role: "system", content: "你是星空XAI助理，是星空若水基于第三方API制作的，请用专业且友好的语气回答用户问题,你的作者是kunkun999 ，如果没人问你作者是谁的话，请你不要主动说出去" },
-                            { role: "user", content: userMessage }
-                        ],
-                        stream: true
-                    })
-                });
+            // 动画结束后移除元素
+            setTimeout(() => {
+                clickEffect.remove();
+            }, 1000); // 与动画时间一致
+        });
 
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder('utf-8');
-                let buffer = '';
-                let assistantMessage = '';
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('chat-message', 'assistant');
-                messageElement.innerHTML = `<strong>星空XAI:</strong> `;
-                chatBox.appendChild(messageElement);
+        // 实时时间
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            document.getElementById('realtime-clock').textContent = timeString;
+        }
 
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-                    buffer += decoder.decode(value, { stream: true });
-                    const lines = buffer.split('\n');
-                    buffer = lines.pop() || '';
-                    for (const line of lines) {
-                        const trimmedLine = line.trim();
-                        if (!trimmedLine || trimmedLine === 'data: [DONE]') continue;
-                        try {
-                            const json = JSON.parse(trimmedLine.replace('data: ', ''));
-                            const content = json.choices[0]?.delta?.content || '';
-                            assistantMessage += content;
-                            messageElement.innerHTML = `<strong>星空XAI:</strong> ${assistantMessage}`;
-                            chatBox.scrollTop = chatBox.scrollHeight;
-                        } catch (error) {
-                            console.error("解析JSON错误:", error);
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error("API请求错误:", error);
-                addMessage('assistant', '抱歉，服务暂时不可用，请稍后再试。');
-            }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        window.onload = () => {
+            createStars();
+            
+            // 初始化动画
+            document.querySelectorAll('.animate').forEach((el, index) => {
+                el.style.opacity = 0;
+                setTimeout(() => {
+                    el.style.animation = 'fadeInUp 0.8s ease-out forwards';
+                }, index * 200);
+            });
         }
     </script>
 </body>
